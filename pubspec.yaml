@@ -1,6 +1,6 @@
 name: custom_text_field
 description: A customizable text field widget for Flutter.
-version: 0.0.4
+version: 0.0.1
 homepage: https://github.com/sanalsanjanz/custom_text_field
 repository: https://github.com/sanalsanjanz/custom_text_field
 issue_tracker: https://github.com/sanalsanjanz/custom_text_field/issues

@@ -17,4 +17,4 @@ Add this package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  custom_text_field: 0.0.4
+  custom_text_field: 0.0.1
