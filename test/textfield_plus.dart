@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:simple_textfield/simple_textfield.dart';
+import 'package:textfield_plus/simple_textfield.dart';
 
 void main() {
   test('adds one to input values', () {

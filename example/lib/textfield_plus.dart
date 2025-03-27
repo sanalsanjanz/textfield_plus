@@ -2,7 +2,7 @@ library;
 
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
+class TextfieldPlus extends StatelessWidget {
   final TextEditingController controller;
   final String title;
   final TextInputType? keyboardType;
@@ -25,7 +25,7 @@ class CustomTextField extends StatelessWidget {
   final bool isBold;
   final Function(dynamic event)? onTapOutside;
 
-  const CustomTextField({
+  const TextfieldPlus({
     super.key,
     required this.title,
     required this.controller,

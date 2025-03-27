@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'custom_textfield.dart';
+import 'textfield_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(title: const Text("Custom Text Field Example")),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: CustomTextField(
+          child: TextfieldPlus(
             title: "Full Name",
             controller: TextEditingController(),
             keyboardType: TextInputType.name,

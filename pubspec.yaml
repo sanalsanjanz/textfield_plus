@@ -1,10 +1,10 @@
-name: simple_textfield
+name: textfield_plus
 description: A customizable text field widget for Flutter.
 version: 0.0.5
-homepage: https://github.com/sanalsanjanz/simple_textfield
-repository: https://github.com/sanalsanjanz/simple_textfield
-issue_tracker: https://github.com/sanalsanjanz/simple_textfield/issues
-documentation: https://github.com/sanalsanjanz/simple_textfield/wiki
+homepage: https://github.com/sanalsanjanz/textfield_plus
+repository: https://github.com/sanalsanjanz/textfield_plus
+issue_tracker: https://github.com/sanalsanjanz/textfield_plus/issues
+documentation: https://github.com/sanalsanjanz/textfield_plus/wiki
 
 environment:
   sdk: ^3.7.0
