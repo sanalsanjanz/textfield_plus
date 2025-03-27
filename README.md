@@ -17,4 +17,4 @@ Add this package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  textfield_plus: 0.0.5
+  textfield_plus: 0.0.6
