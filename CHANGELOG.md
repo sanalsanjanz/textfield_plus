@@ -1,5 +1,4 @@
-## [0.0.6] - 2025-03-27
-### Fixed
-- Updated license to MIT.
-- Renamed package to `textfield_plus`.
-- Fixed dependency warnings.
+## [0.1.3] - 2025-05-09
+- Renamed library file to match package name.
+- Improved input validation and flexibility.
+- Added `onTapOutside` and `selectAll` features.
