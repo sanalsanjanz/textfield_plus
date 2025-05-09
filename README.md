@@ -18,4 +18,24 @@ Add this package to your `pubspec.yaml`:
 ```yaml
 dependencies:
   textfield_plus: ^latest_version
-# TextFieldPlus
+
+
+## Usage
+
+import 'package:textfield_plus/textfield_plus.dart';
+
+CustomTextField(
+  controller: _controller,
+  hintText: 'Enter text here',
+  prefixIcon: Icon(Icons.text_fields),
+  validator: (value) {
+    if (value.isEmpty) {return 'This field cannot be empty';}
+    else{
+    return null;}},
+),
+
+
+
+![screenshot1](https://github.com/user-attachments/assets/8bfa5418-6e14-49e5-8513-75dc817bdea3)
+![screenshot2](https://github.com/user-attachments/assets/4cf3d8eb-f554-48c8-ac23-83b9fd89dce8)
+
