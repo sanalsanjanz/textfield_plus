@@ -19,10 +19,3 @@ Add this package to your `pubspec.yaml`:
 dependencies:
   textfield_plus: ^latest_version
 # TextFieldPlus
-
-
-
-## Screenshots
-
-![Screenshot 1](https://raw.githubusercontent.com/sanalsanjanz/textfield_plus/main/assets/images/screenshot1.jpeg)
-![Screenshot 2](https://raw.githubusercontent.com/sanalsanjanz/textfield_plus/main/assets/images/screenshot2.jpeg)
