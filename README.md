@@ -17,12 +17,6 @@ Add this package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  textfield_plus: 0.1.4
+  textfield_plus: latest version
 # TextFieldPlus
 
-This package provides a custom text field with advanced features.
-
-## Screenshots
-
-![Screenshot 1](assets/images/screenshot1.png)
-![Screenshot 2](assets/images/screenshot2.png)
