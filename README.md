@@ -25,32 +25,83 @@ dependencies:
 Import the package and use the `TextFieldPlus` widget in your Flutter application:
 
 ```dart
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
 import 'package:textfield_plus/textfield_plus.dart';
 
-class MyApp extends StatelessWidget {
+class TestFields extends StatelessWidget {
+  const TestFields({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Text Field Plus Example')),
+      appBar: AppBar(
+        title: Text("Example"),
+        backgroundColor: Colors.blueGrey,
+        foregroundColor: Colors.white,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: CustomTextField(
-          hintText: 'Enter your text here',
-          prefixIcon: Icon(Icons.text_fields),
-          onChanged: (value) {
-            print('Input value: $value');
-          },
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          spacing: 10,
+          children: [
+            TextFieldPlus(controller: TextEditingController(), title: "Name"),
+            TextFieldPlus(
+              controller: TextEditingController(),
+              title: "Name",
+              filled: true,
+              fillColor: Colors.grey.withAlpha(100),
+            ),
+            TextFieldPlus(
+              icon: Icons.person,
+              controller: TextEditingController(),
+              title: "Name",
+              showTitle: false,
+              center: true,
+            ),
+            SizedBox(height: 10),
+            TextFieldPlus(
+              readOnly: true,
+              onTap: () {
+                showDatePicker(
+                  context: context,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2100),
+                );
+              },
+              icon: Icons.calendar_view_week_rounded,
+              controller: TextEditingController(),
+              title: "Date",
+              showTitle: false,
+            ),
+            TextFieldPlus(
+              icon: Icons.phone,
+              isBold: true,
+
+              controller: TextEditingController(),
+              title: "Mobile",
+            ),
+            TextFieldPlus(
+              onChanged: (p0) {
+                log(p0);
+              },
+              maxLines: 5,
+              isBold: true,
+              controller: TextEditingController(),
+              title: "Address",
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
 ```
 ## Screenshot
 
 Below is a screenshot of the `TextFieldPlus` widget in action:
 
-![Screenshot 1](https://raw.githubusercontent.com/sanalsanjanz/textfield_plus/main/assets/images/screenshot1.jpeg)
-![Screenshot 2](https://raw.githubusercontent.com/sanalsanjanz/textfield_plus/main/assets/images/screenshot2.jpeg)
-
+![Screenshot 1](https://raw.githubusercontent.com/sanalsanjanz/textfield_plus/main/assets/images/screenshot.png)
 

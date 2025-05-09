@@ -43,6 +43,9 @@ class TextFieldPlus extends StatelessWidget {
   /// The country code prefix for mobile number inputs.
   final String code;
 
+  /// The title prefix hint select choose- by default Enter.
+  final String titlePrefix;
+
   /// Background color to use when [filled] is true.
   final Color? fillColor;
 
@@ -85,6 +88,7 @@ class TextFieldPlus extends StatelessWidget {
     this.focusNode,
     this.mobile = false,
     this.code = "",
+    this.titlePrefix = "Enter",
     this.showTitle = true,
     this.bottomPadding = true,
     this.readOnly = false,
@@ -158,7 +162,7 @@ class TextFieldPlus extends StatelessWidget {
                       : BorderSide(color: Colors.grey.shade400),
               borderRadius: BorderRadius.circular(8),
             ),
-            hintText: "Enter $title",
+            hintText: "$titlePrefix $title",
             hintStyle: const TextStyle(fontSize: 13, color: Colors.black45),
             prefixIcon:
                 icon != null
