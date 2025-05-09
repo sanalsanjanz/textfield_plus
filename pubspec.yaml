@@ -6,8 +6,7 @@ repository: https://github.com/sanalsanjanz/textfield_plus
 issue_tracker: https://github.com/sanalsanjanz/textfield_plus/issues
 documentation: https://github.com/sanalsanjanz/textfield_plus/wiki
 example: |
-  ![Screenshot 1](assets/images/screenshot1.jpeg)
-  ![Screenshot 2](assets/images/screenshot2.jpeg)
+  ![Screenshot 1](assets/images/screenshot.png)
 
 environment:
   sdk: ^3.7.0
