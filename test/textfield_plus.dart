@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:textfield_plus/simple_textfield.dart';
+import 'package:textfield_plus/textfield_plus.dart';
 
 void main() {
   TextFieldPlus(title: "", controller: TextEditingController());

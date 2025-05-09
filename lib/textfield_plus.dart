@@ -2,29 +2,75 @@ library;
 
 import 'package:flutter/material.dart';
 
+/// A customizable wrapper around [TextFormField] with additional UI features.
+///
+/// `TextFieldPlus` provides convenient options for setting title labels,
+/// validation, padding, keyboard input types, read-only states, and more.
 class TextFieldPlus extends StatelessWidget {
+  /// The controller for managing the text field's value.
   final TextEditingController controller;
+
+  /// The label/title displayed above the text field.
   final String title;
+
+  /// The type of keyboard to use for the text field.
   final TextInputType? keyboardType;
+
+  /// The maximum number of lines for the text input.
   final int? maxLines;
+
+  /// Whether the field is required for validation.
   final bool isRequired;
+
+  /// Whether to add bottom padding below the field.
   final bool? bottomPadding;
+
+  /// Aligns the text to the center if true.
   final bool center;
+
+  /// Fills the field background if true.
   final bool filled;
+
+  /// Whether to show the title above the field.
   final bool showTitle;
+
+  /// Whether this field is intended to be used for amount input.
   final bool isAmount;
+
+  /// Whether this field is for mobile number input.
   final bool mobile;
+
+  /// The country code prefix for mobile number inputs.
   final String code;
+
+  /// Background color to use when [filled] is true.
   final Color? fillColor;
+
+  /// Whether the text field is read-only.
   final bool? readOnly;
+
+  /// Callback when the field is tapped.
   final VoidCallback? onTap;
+
+  /// The [FocusNode] for managing focus.
   final FocusNode? focusNode;
+
+  /// Callback when the field value changes.
   final void Function(String)? onChanged;
+
+  /// Whether to select all text on tap.
   final bool selectAll;
+
+  /// An optional prefix icon to display in the field.
   final IconData? icon;
+
+  /// Whether to make the text bold.
   final bool isBold;
+
+  /// Callback when tapped outside the field.
   final Function(dynamic event)? onTapOutside;
 
+  /// Creates a [TextFieldPlus] widget with enhanced control over appearance and behavior.
   const TextFieldPlus({
     super.key,
     required this.title,
