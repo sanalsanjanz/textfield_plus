@@ -10,6 +10,8 @@ A customizable and feature-rich text field widget for Flutter applications. This
 - Prefix icons and currency support.
 - Read-only and selectable text fields.
 - Focus management and auto-selection of text.
+- ✨ Option to switch UI into a brand new aesthetic look.
+- ✨ Highly customizable styling and behavior.
 
 ## Installation
 

@@ -1,4 +1,4 @@
-library;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 ///
 /// `TextFieldPlus` provides convenient options for setting title labels,
 /// validation, padding, keyboard input types, read-only states, and more.
-class TextFieldPlus extends StatelessWidget {
+/// Now includes a modern aesthetic design option.
+class TextFieldPlus extends StatefulWidget {
   /// The controller for managing the text field's value.
   final TextEditingController controller;
 
@@ -73,6 +74,39 @@ class TextFieldPlus extends StatelessWidget {
   /// Callback when tapped outside the field.
   final Function(dynamic event)? onTapOutside;
 
+  /// Whether to use modern aesthetic design.
+  final bool isModern;
+
+  /// Modern design accent color (used for borders, labels, etc.).
+  final Color? accentColor;
+
+  /// Modern design background color.
+  final Color? modernBackgroundColor;
+
+  /// Border radius for modern design.
+  final double? borderRadius;
+
+  /// Whether to show floating label in modern design.
+  final bool showFloatingLabel;
+
+  /// Whether to show helper text in modern design.
+  final String? helperText;
+
+  /// Custom error color for modern design.
+  final Color? errorColor;
+
+  /// Whether to use glass morphism effect in modern design.
+  final bool useGlassMorphism;
+
+  /// Shadow elevation for modern design.
+  final double shadowElevation;
+
+  /// Suffix icon for modern design.
+  final IconData? suffixIcon;
+
+  /// Suffix icon callback.
+  final VoidCallback? onSuffixIconTap;
+
   /// Creates a [TextFieldPlus] widget with enhanced control over appearance and behavior.
   const TextFieldPlus({
     super.key,
@@ -98,58 +132,324 @@ class TextFieldPlus extends StatelessWidget {
     this.icon,
     this.isBold = false,
     this.isAmount = false,
+    this.isModern = false,
+    this.accentColor,
+    this.modernBackgroundColor,
+    this.borderRadius,
+    this.showFloatingLabel = true,
+    this.helperText,
+    this.errorColor,
+    this.useGlassMorphism = false,
+    this.shadowElevation = 0,
+    this.suffixIcon,
+    this.onSuffixIconTap,
   });
 
   @override
+  State<TextFieldPlus> createState() => _TextFieldPlusState();
+}
+
+class _TextFieldPlusState extends State<TextFieldPlus>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _focusAnimation;
+  bool _isFocused = false;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _focusAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
+    widget.focusNode?.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    widget.focusNode?.removeListener(_onFocusChange);
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    setState(() {
+      _isFocused = widget.focusNode?.hasFocus ?? false;
+    });
+    if (_isFocused) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    return widget.isModern ? _buildModernTextField() : _buildClassicTextField();
+  }
+
+  Widget _buildModernTextField() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final accentColor = widget.accentColor ?? theme.primaryColor;
+    final backgroundColor =
+        widget.modernBackgroundColor ??
+        (isDark ? Colors.grey[850] : Colors.grey[50]);
+    final borderRadius = widget.borderRadius ?? 16.0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (showTitle) ...[
+        if (widget.showTitle && !widget.showFloatingLabel) ...[
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              widget.title,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: accentColor,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+        ],
+        AnimatedBuilder(
+          animation: _focusAnimation,
+          builder: (context, child) {
+            return Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(borderRadius),
+                boxShadow:
+                    widget.shadowElevation > 0
+                        ? [
+                          BoxShadow(
+                            color: accentColor.withOpacity(
+                              _isFocused ? 0.3 : 0.1,
+                            ),
+                            blurRadius: widget.shadowElevation,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                        : null,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(borderRadius),
+                child: BackdropFilter(
+                  filter:
+                      widget.useGlassMorphism
+                          ? ImageFilter.blur(sigmaX: 10, sigmaY: 10)
+                          : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+                  child: TextFormField(
+                    controller: widget.controller,
+                    focusNode: widget.focusNode,
+                    onChanged: widget.onChanged,
+                    onTap:
+                        widget.selectAll
+                            ? () =>
+                                widget.controller.selection = TextSelection(
+                                  baseOffset: 0,
+                                  extentOffset: widget.controller.text.length,
+                                )
+                            : widget.onTap,
+                    onTapOutside: widget.onTapOutside,
+                    keyboardType:
+                        widget.keyboardType == TextInputType.number
+                            ? const TextInputType.numberWithOptions(
+                              decimal: true,
+                            )
+                            : widget.keyboardType,
+                    maxLines: widget.maxLines,
+                    readOnly: widget.readOnly ?? false,
+                    textAlign:
+                        widget.center
+                            ? TextAlign.center
+                            : widget.keyboardType == TextInputType.number
+                            ? TextAlign.end
+                            : TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight:
+                          widget.isBold ? FontWeight.w600 : FontWeight.w400,
+                      color: isDark ? Colors.white : Colors.black87,
+                      letterSpacing: 0.2,
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor:
+                          widget.useGlassMorphism
+                              ? backgroundColor?.withOpacity(0.7)
+                              : backgroundColor,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical:
+                            widget.maxLines != null && widget.maxLines! > 1
+                                ? 16
+                                : 18,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        borderSide: BorderSide(
+                          color: Colors.grey.withOpacity(0.3),
+                          width: 1.5,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        borderSide: BorderSide(
+                          color: Colors.grey.withOpacity(0.3),
+                          width: 1.5,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        borderSide: BorderSide(color: accentColor, width: 2.0),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        borderSide: BorderSide(
+                          color: widget.errorColor ?? Colors.red,
+                          width: 2.0,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(borderRadius),
+                        borderSide: BorderSide(
+                          color: widget.errorColor ?? Colors.red,
+                          width: 2.0,
+                        ),
+                      ),
+                      labelText: widget.showFloatingLabel ? widget.title : null,
+                      labelStyle: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      floatingLabelStyle: TextStyle(
+                        color: accentColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      hintText:
+                          widget.showFloatingLabel
+                              ? null
+                              : "${widget.titlePrefix} ${widget.title}",
+                      hintStyle: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[500],
+                        fontWeight: FontWeight.w400,
+                      ),
+                      helperText: widget.helperText,
+                      helperStyle: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                      prefixIcon:
+                          widget.icon != null
+                              ? Container(
+                                margin: const EdgeInsets.only(
+                                  left: 12,
+                                  right: 8,
+                                ),
+                                child: Icon(
+                                  widget.icon,
+                                  color:
+                                      _isFocused
+                                          ? accentColor
+                                          : Colors.grey[500],
+                                  size: 20,
+                                ),
+                              )
+                              : null,
+                      suffixIcon:
+                          widget.suffixIcon != null
+                              ? GestureDetector(
+                                onTap: widget.onSuffixIconTap,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                    left: 8,
+                                    right: 12,
+                                  ),
+                                  child: Icon(
+                                    widget.suffixIcon,
+                                    color:
+                                        _isFocused
+                                            ? accentColor
+                                            : Colors.grey[500],
+                                    size: 20,
+                                  ),
+                                ),
+                              )
+                              : null,
+                    ),
+                    validator: widget.isRequired ? _validateInput : null,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        if (widget.bottomPadding ?? true) const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildClassicTextField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.showTitle) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child: Text(
-              title,
+              widget.title,
               style: const TextStyle(fontSize: 12, color: Colors.black54),
             ),
           ),
           const SizedBox(height: 2),
         ],
         TextFormField(
-          onTapOutside: onTapOutside,
+          onTapOutside: widget.onTapOutside,
           onTap:
-              selectAll
+              widget.selectAll
                   ? () =>
-                      controller.selection = TextSelection(
+                      widget.controller.selection = TextSelection(
                         baseOffset: 0,
-                        extentOffset: controller.text.length,
+                        extentOffset: widget.controller.text.length,
                       )
-                  : onTap,
+                  : widget.onTap,
           style: TextStyle(
             fontSize: 13,
-            fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
+            fontWeight: widget.isBold ? FontWeight.w600 : FontWeight.normal,
             color: Colors.black87,
           ),
           textInputAction: TextInputAction.next,
           textAlign:
-              center
+              widget.center
                   ? TextAlign.center
-                  : keyboardType == TextInputType.number
+                  : widget.keyboardType == TextInputType.number
                   ? TextAlign.end
                   : TextAlign.start,
-          focusNode: focusNode,
-          onChanged: onChanged,
+          focusNode: widget.focusNode,
+          onChanged: widget.onChanged,
           keyboardType:
-              keyboardType == TextInputType.number
+              widget.keyboardType == TextInputType.number
                   ? const TextInputType.numberWithOptions(decimal: true)
-                  : keyboardType,
-          controller: controller,
-          maxLines: maxLines,
-          readOnly: readOnly ?? false,
+                  : widget.keyboardType,
+          controller: widget.controller,
+          maxLines: widget.maxLines,
+          readOnly: widget.readOnly ?? false,
           decoration: InputDecoration(
-            filled: filled,
-            fillColor: fillColor,
+            filled: widget.filled,
+            fillColor: widget.fillColor,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 10,
               vertical: 10,
@@ -157,46 +457,59 @@ class TextFieldPlus extends StatelessWidget {
             isDense: true,
             border: OutlineInputBorder(
               borderSide:
-                  filled
+                  widget.filled
                       ? BorderSide.none
                       : BorderSide(color: Colors.grey.shade400),
               borderRadius: BorderRadius.circular(8),
             ),
-            hintText: "$titlePrefix $title",
+            hintText: "${widget.titlePrefix} ${widget.title}",
             hintStyle: const TextStyle(fontSize: 13, color: Colors.black45),
             prefixIcon:
-                icon != null
+                widget.icon != null
                     ? Padding(
                       padding: const EdgeInsets.only(left: 8, right: 4),
-                      child: Icon(icon, color: Colors.grey.shade400, size: 18),
+                      child: Icon(
+                        widget.icon,
+                        color: Colors.grey.shade400,
+                        size: 18,
+                      ),
                     )
                     : null,
           ),
-          validator: isRequired ? _validateInput : null,
+          validator: widget.isRequired ? _validateInput : null,
         ),
-        if (bottomPadding ?? true) const SizedBox(height: 8),
+        if (widget.bottomPadding ?? true) const SizedBox(height: 8),
       ],
     );
   }
 
   String? _validateInput(String? value) {
-    if (value == null || value.isEmpty) return 'Please enter $title';
+    if (value == null || value.isEmpty) {
+      setState(() => _hasError = true);
+      return 'Please enter ${widget.title}';
+    }
 
-    if (keyboardType == TextInputType.phone) {
-      if (value.length < 6) return 'Mobile number must be at least 6 digits';
+    if (widget.keyboardType == TextInputType.phone) {
+      if (value.length < 6) {
+        setState(() => _hasError = true);
+        return 'Mobile number must be at least 6 digits';
+      }
       if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+        setState(() => _hasError = true);
         return 'Please enter a valid mobile number';
       }
     }
 
-    if (keyboardType == TextInputType.emailAddress) {
+    if (widget.keyboardType == TextInputType.emailAddress) {
       if (!RegExp(
         r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
       ).hasMatch(value)) {
+        setState(() => _hasError = true);
         return 'Please enter a valid email address';
       }
     }
 
+    setState(() => _hasError = false);
     return null;
   }
 }
