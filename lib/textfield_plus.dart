@@ -154,6 +154,7 @@ class _TextFieldPlusState extends State<TextFieldPlus>
   late AnimationController _animationController;
   late Animation<double> _focusAnimation;
   bool _isFocused = false;
+  // ignore: unused_field
   bool _hasError = false;
 
   @override
@@ -231,9 +232,7 @@ class _TextFieldPlusState extends State<TextFieldPlus>
                     widget.shadowElevation > 0
                         ? [
                           BoxShadow(
-                            color: accentColor.withOpacity(
-                              _isFocused ? 0.3 : 0.1,
-                            ),
+                            color: accentColor.withAlpha(_isFocused ? 77 : 26),
                             blurRadius: widget.shadowElevation,
                             offset: const Offset(0, 2),
                           ),
@@ -285,7 +284,7 @@ class _TextFieldPlusState extends State<TextFieldPlus>
                       filled: true,
                       fillColor:
                           widget.useGlassMorphism
-                              ? backgroundColor?.withOpacity(0.7)
+                              ? backgroundColor?.withAlpha(179)
                               : backgroundColor,
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 20,
@@ -297,14 +296,14 @@ class _TextFieldPlusState extends State<TextFieldPlus>
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(borderRadius),
                         borderSide: BorderSide(
-                          color: Colors.grey.withOpacity(0.3),
+                          color: Colors.grey.withAlpha(77),
                           width: 1.5,
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(borderRadius),
                         borderSide: BorderSide(
-                          color: Colors.grey.withOpacity(0.3),
+                          color: Colors.grey.withAlpha(77),
                           width: 1.5,
                         ),
                       ),
