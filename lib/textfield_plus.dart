@@ -1,114 +1,127 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-/// A customizable wrapper around [TextFormField] with additional UI features.
+/// A customizable and modern text field with optional autocomplete support.
 ///
-/// `TextFieldPlus` provides convenient options for setting title labels,
-/// validation, padding, keyboard input types, read-only states, and more.
-/// Now includes a modern aesthetic design option.
-class TextFieldPlus extends StatefulWidget {
-  /// The controller for managing the text field's value.
+/// Supports classic and modern UI modes, validation, focus animations,
+/// and both String or Model-based autocomplete.
+class TextFieldPlus<T extends Object> extends StatefulWidget {
+  /// Controller to manage the text input value.
   final TextEditingController controller;
 
-  /// The label/title displayed above the text field.
+  /// Title or label for the text field.
   final String title;
 
-  /// The type of keyboard to use for the text field.
+  /// Optional list for String autocomplete.
+  final List<String>? list;
+
+  /// Optional model list for model-based autocomplete.
+  final List<T>? modelList;
+
+  /// Function to get the display label from a model.
+  String Function(T)? getDisplayLabel;
+
+  /// Callback when a model is selected from autocomplete.
+  final void Function(T)? onSelectedModel;
+
+  /// Called when text changes.
+  final void Function(String)? onChanged;
+
+  /// Keyboard input type.
   final TextInputType? keyboardType;
 
-  /// The maximum number of lines for the text input.
+  /// Maximum number of input lines.
   final int? maxLines;
 
-  /// Whether the field is required for validation.
+  /// Whether this field is required (for validation).
   final bool isRequired;
 
-  /// Whether to add bottom padding below the field.
-  final bool? bottomPadding;
-
-  /// Aligns the text to the center if true.
-  final bool center;
-
-  /// Fills the field background if true.
+  /// Whether to fill the background color.
   final bool filled;
 
-  /// Whether to show the title above the field.
-  final bool showTitle;
-
-  /// Whether this field is intended to be used for amount input.
-  final bool isAmount;
-
-  /// Whether this field is for mobile number input.
-  final bool mobile;
-
-  /// The country code prefix for mobile number inputs.
-  final String code;
-
-  /// The title prefix hint select choose- by default Enter.
-  final String titlePrefix;
-
-  /// Background color to use when [filled] is true.
+  /// Background fill color (used when [filled] is true).
   final Color? fillColor;
 
-  /// Whether the text field is read-only.
+  /// Whether to center align the text.
+  final bool center;
+
+  /// Whether to show the title label.
+  final bool showTitle;
+
+  /// Whether this field is for amount entry.
+  final bool isAmount;
+
+  /// Whether this field is for mobile number entry.
+  final bool mobile;
+
+  /// Optional prefix code for phone number fields.
+  final String code;
+
+  /// Custom text for prefixing the hint.
+  final String titlePrefix;
+
+  /// Whether this field is read-only.
   final bool? readOnly;
+
+  /// Whether to select all text when tapped.
+  final bool selectAll;
+
+  /// An optional prefix icon.
+  final IconData? icon;
+
+  /// Whether to make text bold.
+  final bool isBold;
+
+  /// Optional focus node.
+  final FocusNode? focusNode;
 
   /// Callback when the field is tapped.
   final VoidCallback? onTap;
 
-  /// The [FocusNode] for managing focus.
-  final FocusNode? focusNode;
-
-  /// Callback when the field value changes.
-  final void Function(String)? onChanged;
-
-  /// Whether to select all text on tap.
-  final bool selectAll;
-
-  /// An optional prefix icon to display in the field.
-  final IconData? icon;
-
-  /// Whether to make the text bold.
-  final bool isBold;
-
   /// Callback when tapped outside the field.
-  final Function(dynamic event)? onTapOutside;
+  final Function(dynamic)? onTapOutside;
 
-  /// Whether to use modern aesthetic design.
+  /// Whether to use the modern UI style.
   final bool isModern;
 
-  /// Modern design accent color (used for borders, labels, etc.).
+  /// Color accent for modern design (used for focused border, labels, etc.).
   final Color? accentColor;
 
-  /// Modern design background color.
+  /// Background color for modern design.
   final Color? modernBackgroundColor;
 
-  /// Border radius for modern design.
+  /// Border radius for modern field container.
   final double? borderRadius;
 
-  /// Whether to show floating label in modern design.
+  /// Whether to show floating label.
   final bool showFloatingLabel;
 
-  /// Whether to show helper text in modern design.
-  final String? helperText;
+  /// Optional helper text.
+  final String? hintText;
 
-  /// Custom error color for modern design.
+  /// Custom error color for validation.
   final Color? errorColor;
 
-  /// Whether to use glass morphism effect in modern design.
+  /// Whether to apply glass morphism effect in modern mode.
   final bool useGlassMorphism;
 
   /// Shadow elevation for modern design.
   final double shadowElevation;
 
-  /// Suffix icon for modern design.
+  /// Optional suffix icon.
   final IconData? suffixIcon;
 
-  /// Suffix icon callback.
+  /// Callback when suffix icon is tapped.
   final VoidCallback? onSuffixIconTap;
 
-  /// Creates a [TextFieldPlus] widget with enhanced control over appearance and behavior.
-  const TextFieldPlus({
+  /// Optional padding below the field.
+  final bool? bottomPadding;
+
+  /// Constructor for [TextFieldPlus] with all customization options.
+  TextFieldPlus({
     super.key,
     required this.title,
     required this.controller,
@@ -137,19 +150,23 @@ class TextFieldPlus extends StatefulWidget {
     this.modernBackgroundColor,
     this.borderRadius,
     this.showFloatingLabel = true,
-    this.helperText,
+    this.hintText,
     this.errorColor,
     this.useGlassMorphism = false,
     this.shadowElevation = 0,
     this.suffixIcon,
     this.onSuffixIconTap,
+    this.list,
+    this.modelList,
+    this.getDisplayLabel,
+    this.onSelectedModel,
   });
 
   @override
-  State<TextFieldPlus> createState() => _TextFieldPlusState();
+  State<TextFieldPlus<T>> createState() => _TextFieldPlusState<T>();
 }
 
-class _TextFieldPlusState extends State<TextFieldPlus>
+class _TextFieldPlusState<T extends Object> extends State<TextFieldPlus<T>>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _focusAnimation;
@@ -178,6 +195,7 @@ class _TextFieldPlusState extends State<TextFieldPlus>
     super.dispose();
   }
 
+  /// Handles focus animation state change.
   void _onFocusChange() {
     setState(() {
       _isFocused = widget.focusNode?.hasFocus ?? false;
@@ -194,7 +212,45 @@ class _TextFieldPlusState extends State<TextFieldPlus>
     return widget.isModern ? _buildModernTextField() : _buildClassicTextField();
   }
 
+  /// Builds modern-style TextField with optional autocomplete.
   Widget _buildModernTextField() {
+    if ((widget.list != null && widget.list!.isNotEmpty) ||
+        (widget.modelList != null && widget.modelList!.isNotEmpty)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: TextSpan(
+              text: widget.title,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF374151),
+              ),
+              children:
+                  widget.isRequired
+                      ? const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ]
+                      : null,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[300]!),
+              color: Colors.grey[50],
+            ),
+            child: _buildAutoComplete(context),
+          ),
+        ],
+      );
+    }
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -345,11 +401,11 @@ class _TextFieldPlusState extends State<TextFieldPlus>
                         color: Colors.grey[500],
                         fontWeight: FontWeight.w400,
                       ),
-                      helperText: widget.helperText,
-                      helperStyle: TextStyle(
+                      /*      helperText: widget.hintText, */
+                      /*   helperStyle: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 12,
-                      ),
+                      ), */
                       prefixIcon:
                           widget.icon != null
                               ? Container(
@@ -400,7 +456,45 @@ class _TextFieldPlusState extends State<TextFieldPlus>
     );
   }
 
+  /// Builds classic TextField with optional autocomplete.
   Widget _buildClassicTextField() {
+    if ((widget.list != null && widget.list!.isNotEmpty) ||
+        (widget.modelList != null && widget.modelList!.isNotEmpty)) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: TextSpan(
+              text: widget.title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF374151),
+              ),
+              children:
+                  widget.isRequired
+                      ? const [
+                        TextSpan(
+                          text: ' *',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ]
+                      : null,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[300]!),
+              color: Colors.grey[50],
+            ),
+            child: _buildAutoComplete(context),
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -482,33 +576,203 @@ class _TextFieldPlusState extends State<TextFieldPlus>
     );
   }
 
+  /// Builds Autocomplete (both String and Model based).
+  Widget _buildAutoComplete(BuildContext context) {
+    if (widget.list != null && widget.list!.isNotEmpty) {
+      return Autocomplete<String>(
+        optionsBuilder: (TextEditingValue textEditingValue) {
+          if (textEditingValue.text.isEmpty) {
+            return const Iterable<String>.empty();
+          }
+          return widget.list!.where(
+            (item) => item.toLowerCase().contains(
+              textEditingValue.text.toLowerCase(),
+            ),
+          );
+        },
+        optionsViewBuilder: (context, onSelected, options) {
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(10), // Rounded border
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // White background
+                  borderRadius: BorderRadius.circular(10), // Rounded border
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                  ), // Optional: border color
+                ),
+                /* constraints: const BoxConstraints(
+                            maxHeight: 200,
+                          ), // Limit height */
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: options.length,
+                  itemBuilder: (context, index) {
+                    final option = options.elementAt(index);
+                    return InkWell(
+                      onTap: () => onSelected(option),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Text(option),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
+        onSelected: (String selection) {
+          widget.controller.text = selection;
+          widget.onChanged?.call(selection);
+        },
+        fieldViewBuilder: (
+          context,
+          textFieldController,
+          focusNode,
+          onFieldSubmitted,
+        ) {
+          textFieldController.text = widget.controller.text;
+          return TextFormField(
+            controller: textFieldController,
+            focusNode: focusNode,
+            onChanged: widget.onChanged,
+            readOnly: widget.readOnly ?? false,
+            keyboardType: widget.keyboardType,
+            maxLines: widget.maxLines,
+            decoration: InputDecoration(
+              prefixIcon:
+                  widget.icon != null
+                      ? Icon(widget.icon, color: Colors.grey[600], size: 20)
+                      : null,
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 13,
+              ),
+              hintText: widget.hintText ?? 'Enter ${widget.title}',
+              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+            ),
+            onFieldSubmitted: (value) => onFieldSubmitted(),
+          );
+        },
+      );
+    } else if (widget.modelList != null &&
+        widget.modelList!.isNotEmpty &&
+        widget.getDisplayLabel != null) {
+      return Autocomplete<T>(
+        displayStringForOption: widget.getDisplayLabel!,
+        optionsViewBuilder: (context, onSelected, options) {
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(10), // Rounded border
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, // White background
+                  borderRadius: BorderRadius.circular(10), // Rounded border
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                  ), // Optional border color
+                ),
+                constraints: const BoxConstraints(
+                  maxHeight: 200, // Optional: Limit dropdown height
+                ),
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemCount: options.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final option = options.elementAt(index);
+                    return InkWell(
+                      onTap: () => onSelected(option),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Text(
+                          widget.getDisplayLabel!(
+                            option,
+                          ), // ✅ Display label using your function
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
+
+        optionsBuilder: (TextEditingValue textEditingValue) {
+          if (textEditingValue.text.isEmpty) {
+            return Iterable<T>.empty();
+          }
+          return widget.modelList!.where((item) {
+            final label = widget.getDisplayLabel!(item);
+            return label.toLowerCase().contains(
+              textEditingValue.text.toLowerCase(),
+            );
+          });
+        },
+        onSelected: (T selectedModel) {
+          widget.controller.text = widget.getDisplayLabel!(selectedModel);
+          widget.onSelectedModel?.call(selectedModel);
+          widget.onChanged?.call(widget.controller.text);
+        },
+        fieldViewBuilder: (
+          context,
+          textFieldController,
+          focusNode,
+          onFieldSubmitted,
+        ) {
+          textFieldController.text = widget.controller.text;
+          return TextFormField(
+            controller: textFieldController,
+            focusNode: focusNode,
+            onChanged: widget.onChanged,
+            readOnly: widget.readOnly ?? false,
+            keyboardType: widget.keyboardType,
+            maxLines: widget.maxLines,
+            decoration: InputDecoration(
+              prefixIcon: Icon(widget.icon, color: Colors.grey[600], size: 20),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 13,
+              ),
+              hintText: widget.hintText ?? 'Enter ${widget.title}',
+              hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+            ),
+            onFieldSubmitted: (value) => onFieldSubmitted(),
+          );
+        },
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  /// Validates the input text.
   String? _validateInput(String? value) {
     if (value == null || value.isEmpty) {
       setState(() => _hasError = true);
       return 'Please enter ${widget.title}';
     }
-
-    if (widget.keyboardType == TextInputType.phone) {
-      if (value.length < 6) {
-        setState(() => _hasError = true);
-        return 'Mobile number must be at least 6 digits';
-      }
-      if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-        setState(() => _hasError = true);
-        return 'Please enter a valid mobile number';
-      }
-    }
-
-    if (widget.keyboardType == TextInputType.emailAddress) {
-      if (!RegExp(
-        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-      ).hasMatch(value)) {
-        setState(() => _hasError = true);
-        return 'Please enter a valid email address';
-      }
-    }
-
-    setState(() => _hasError = false);
     return null;
   }
 }
