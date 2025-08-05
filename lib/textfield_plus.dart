@@ -749,7 +749,11 @@ class _TextFieldPlusState<T extends Object> extends State<TextFieldPlus<T>>
             keyboardType: widget.keyboardType,
             maxLines: widget.maxLines,
             decoration: InputDecoration(
-              prefixIcon: Icon(widget.icon, color: Colors.grey[600], size: 20),
+              prefixIcon: Icon(
+                widget.icon,
+                color: Colors.grey[500],
+                size: 19.5,
+              ),
               border: InputBorder.none,
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(
